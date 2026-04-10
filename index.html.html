@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYC Store 🎁 고르다 보면 답 나와요, 선물 PICK 월드컵</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --card: #1a1a1a;
+    --card2: #242424;
+    --accent: #f0c060;
+    --accent2: #e8855a;
+    --text: #f5f0e8;
+    --muted: #888;
+    --border: #333;
+    --vs: #ff4040;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(240,192,96,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 30% at 80% 80%, rgba(232,133,90,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+  .header p { color: var(--muted); font-size: 14px; font-weight: 300; }
+
+  /* Steps */
+  .step { display: none; animation: fadeUp 0.45s ease both; }
+  .step.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .step-title {
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 700;
+    margin-bottom: 28px;
+    line-height: 1.3;
+  }
+
+  /* Selection buttons */
+  .select-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .sel-btn {
+    padding: 14px 28px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.22s;
+    position: relative;
+    overflow: hidden;
+  }
+  .sel-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.22s;
+  }
+  .sel-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .sel-btn:hover::before { opacity: 0.12; }
+  .sel-btn.selected {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(240,192,96,0.18), rgba(232,133,90,0.12));
+    color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(240,192,96,0.15);
+  }
+  .sel-btn span { position: relative; z-index: 1; }
+
+  /* Primary button */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0d0d0d;
+    border: none;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s;
+    letter-spacing: 0.5px;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(240,192,96,0.3); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* Progress bar */
+  .progress-wrap { margin-bottom: 36px; }
+  .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: var(--muted); }
+  .progress-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  .round-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, rgba(240,192,96,0.15), rgba(232,133,90,0.1));
+    border: 1px solid rgba(240,192,96,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+
+  /* VS arena */
+  .vs-arena {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  .vs-badge {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--vs);
+    text-align: center;
+    text-shadow: 0 0 20px rgba(255,64,64,0.4);
+  }
+
+  /* Product card */
+  .product-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+    position: relative;
+  }
+  .product-card:hover { 
+    border-color: var(--accent); 
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(240,192,96,0.2);
+  }
+  .product-card.chosen {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent), 0 20px 50px rgba(240,192,96,0.2);
+    transform: translateY(-4px) scale(1.02);
+    animation: chosen-pulse 0.4s ease;
+  }
+  @keyframes chosen-pulse {
+    0% { transform: scale(1.02); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1.02); }
+  }
+  .product-card.unchosen { opacity: 0.35; transform: scale(0.97); filter: grayscale(60%); }
+
+  .card-img-wrap {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--card2);
+  }
+  .card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+    display: block;
+  }
+  .product-card:hover .card-img-wrap img { transform: scale(1.06); }
+
+  .img-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    background: var(--card2);
+  }
+  .img-fallback .icon { font-size: 32px; }
+
+  .card-choose-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(240,192,96,0.85), rgba(232,133,90,0.85));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 28px;
+    font-weight: 900;
+    color: #0d0d0d;
+  }
+  .product-card:hover .card-choose-overlay { opacity: 1; }
+
+  .card-body { padding: 14px 16px 16px; }
+  .card-brand { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+  .card-name { font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 8px; }
+  .card-price { font-size: 16px; font-weight: 700; color: var(--accent); }
+  .card-category { 
+    display: inline-block;
+    background: rgba(240,192,96,0.12);
+    border: 1px solid rgba(240,192,96,0.25);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Winner screen */
+  .winner-wrap {
+    text-align: center;
+  }
+  .winner-crown { font-size: 64px; margin-bottom: 16px; animation: bounce 1s ease infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+  .winner-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+  .winner-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+
+  .winner-card {
+    max-width: 320px;
+    margin: 0 auto 32px;
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(240,192,96,0.2);
+  }
+  .winner-card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+  .winner-card .card-body { text-align: left; }
+
+  /* Coupon */
+  .coupon-box {
+    background: linear-gradient(135deg, var(--card), var(--card2));
+    border: 2px dashed var(--accent);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .coupon-box::before {
+    content: '🎁';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 48px;
+    opacity: 0.15;
+  }
+  .coupon-label { font-size: 11px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  .coupon-amount { font-size: 40px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+  .coupon-desc { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .coupon-code {
+    display: inline-block;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .coupon-code:hover { border-color: var(--accent); }
+  .coupon-copied { font-size: 12px; color: #4caf50; margin-top: 8px; display: none; }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 32px;
+    background: transparent;
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 12px;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .buy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0d0d0d;
+    border: none;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s;
+    text-decoration: none;
+    margin-bottom: 12px;
+  }
+  .buy-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(240,192,96,0.3); }
+
+  /* Confetti */
+  .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+  .confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    animation: confetti-fall linear both;
+  }
+  @keyframes confetti-fall {
+    0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+  }
+
+  .pair-count { 
+    text-align: center; 
+    color: var(--muted); 
+    font-size: 13px; 
+    margin-bottom: 20px; 
+  }
+
+  @media (max-width: 600px) {
+    .vs-arena { gap: 10px; }
+    .vs-badge { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="header">
+    <div class="eyebrow">SYC Store × 5월 가정의 달 선물 PICK</div>
+    <h1>고르다 보면 답 나와요,<br>선물 PICK 월드컵</h1>
+    <p>어린이날 · 어버이날 · 스승의날, 딱 맞는 선물을 찾아드려요 🎁</p>
+  </div>
+
+  <!-- Step 1: 연령 선택 -->
+  <div class="step active" id="step-age">
+    <div class="step-label">Step 1 of 3</div>
+    <div class="step-title">몇 살을 위한 선물인가요?</div>
+    <div class="select-grid" id="age-grid">
+      <button class="sel-btn" data-val="10" onclick="selectAge(this)"><span>10대</span></button>
+      <button class="sel-btn" data-val="20" onclick="selectAge(this)"><span>20대</span></button>
+      <button class="sel-btn" data-val="30" onclick="selectAge(this)"><span>30대</span></button>
+      <button class="sel-btn" data-val="40" onclick="selectAge(this)"><span>40대</span></button>
+      <button class="sel-btn" data-val="50" onclick="selectAge(this)"><span>50대 이상</span></button>
+    </div>
+    <button class="btn-primary" id="age-next" onclick="goStep('step-gender')" disabled>
+      <span>다음</span> <span>→</span>
+    </button>
+  </div>
+
+  <!-- Step 2: 성별 선택 -->
+  <div class="step" id="step-gender">
+    <div class="step-label">Step 2 of 3</div>
+    <div class="step-title">어떤 분을 위한 선물인가요?</div>
+    <div class="select-grid" id="gender-grid">
+      <button class="sel-btn" data-val="female" onclick="selectGender(this)"><span>👩 여성</span></button>
+      <button class="sel-btn" data-val="male" onclick="selectGender(this)"><span>👨 남성</span></button>
+    </div>
+    <button class="btn-primary" id="gender-next" onclick="goStep('step-occasion')" disabled>
+      <span>다음</span> <span>→</span>
+    </button>
+  </div>
+
+  <!-- Step 3: 목적 선택 -->
+  <div class="step" id="step-occasion">
+    <div class="step-label">Step 3 of 3</div>
+    <div class="step-title">어떤 날을 위한 선물인가요?</div>
+    <div class="select-grid" id="occasion-grid">
+      <button class="sel-btn occasion-btn" data-val="children" onclick="selectOccasion(this)">
+        <span>🧒 어린이날<small style="display:block;font-size:11px;opacity:0.7;margin-top:3px">5월 5일</small></span>
+      </button>
+      <button class="sel-btn occasion-btn" data-val="parents" onclick="selectOccasion(this)">
+        <span>👨‍👩‍👧 어버이날<small style="display:block;font-size:11px;opacity:0.7;margin-top:3px">5월 8일</small></span>
+      </button>
+      <button class="sel-btn occasion-btn" data-val="teacher" onclick="selectOccasion(this)">
+        <span>🍎 스승의날<small style="display:block;font-size:11px;opacity:0.7;margin-top:3px">5월 15일</small></span>
+      </button>
+    </div>
+    <button class="btn-primary" id="occasion-next" onclick="startWorldcup()" disabled>
+      <span>월드컵 시작!</span> <span>🏆</span>
+    </button>
+  </div>
+
+  <!-- Step 3: 월드컵 -->
+  <div class="step" id="step-worldcup">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="progress-text">16강 · 1/8 경기</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="round-badge" id="round-badge">🏆 16강</div>
+    <div class="pair-count" id="pair-count"></div>
+
+    <div class="vs-arena">
+      <div class="product-card" id="card-a" onclick="choose(0)">
+        <div class="card-img-wrap">
+          <img id="img-a" src="" alt="" onerror="this.style.display='none';document.getElementById('fb-a').style.display='flex'">
+          <div class="img-fallback" id="fb-a" style="display:none"><div class="icon">📦</div><div>이미지 로딩중</div></div>
+          <div class="card-choose-overlay">선택!</div>
+        </div>
+        <div class="card-body">
+          <div class="card-category" id="cat-a"></div>
+          <div class="card-brand" id="brand-a"></div>
+          <div class="card-name" id="name-a"></div>
+          <div class="card-price" id="price-a"></div>
+        </div>
+      </div>
+
+      <div class="vs-badge">VS</div>
+
+      <div class="product-card" id="card-b" onclick="choose(1)">
+        <div class="card-img-wrap">
+          <img id="img-b" src="" alt="" onerror="this.style.display='none';document.getElementById('fb-b').style.display='flex'">
+          <div class="img-fallback" id="fb-b" style="display:none"><div class="icon">📦</div><div>이미지 로딩중</div></div>
+          <div class="card-choose-overlay">선택!</div>
+        </div>
+        <div class="card-body">
+          <div class="card-category" id="cat-b"></div>
+          <div class="card-brand" id="brand-b"></div>
+          <div class="card-name" id="name-b"></div>
+          <div class="card-price" id="price-b"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: 결과 -->
+  <div class="step" id="step-result">
+    <div class="winner-wrap">
+      <div class="winner-crown" id="winner-crown">👑</div>
+      <div class="winner-title">최종 선물 결정!</div>
+      <div class="winner-subtitle" id="result-subtitle">당신의 취향이 선택한 단 하나의 선물</div>
+
+      <div class="winner-card" id="winner-card">
+        <img id="winner-img" src="" alt="">
+        <div class="card-body">
+          <div class="card-category" id="winner-cat"></div>
+          <div class="card-brand" id="winner-brand"></div>
+          <div class="card-name" id="winner-name" style="font-size:16px;font-weight:700;margin-bottom:8px;"></div>
+          <div class="card-price" id="winner-price" style="font-size:20px;"></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:28px;">
+        <a id="buy-link" href="#" target="_blank" class="buy-btn">🛍 지금 구경하기</a>
+      </div>
+
+      <div class="coupon-box" id="coupon-box">
+        <div class="coupon-label" id="coupon-label">Special Discount Coupon</div>
+        <div class="coupon-amount">1,000<small style="font-size:20px">원</small></div>
+        <div class="coupon-desc" id="coupon-desc">선택하신 상품 구매 시 사용 가능한 할인 쿠폰</div>
+        <div class="coupon-code" id="coupon-code" onclick="copyCoupon()">GIFT2026</div>
+        <div class="coupon-copied" id="copied-msg">✅ 복사되었습니다!</div>
+      </div>
+
+      <button class="buy-btn" onclick="restart()" style="background:transparent;color:var(--accent);border:2px solid var(--accent);box-shadow:none;">
+        🔄 다시 하기
+      </button>
+    </div>
+    <div class="confetti-wrap" id="confetti"></div>
+  </div>
+</div>
+
+<script>
+// ============================
+// OCCASION CONFIG
+// ============================
+const OCCASION_CONFIG = {
+  children: {
+    label: '어린이날',
+    emoji: '🧒',
+    coupon: 'CHILD0505',
+    couponDesc: '어린이날 특별 할인 쿠폰 · 5월 5일까지',
+    accentColor: '#ff6b9d',
+    accent2Color: '#ffab40',
+    subtitle: (age, gender) => `${gender}을 위한 어린이날 선물 🎉`,
+    bgGradient: 'radial-gradient(ellipse 60% 40% at 20% 10%, rgba(255,107,157,0.08) 0%, transparent 60%), radial-gradient(ellipse 50% 30% at 80% 80%, rgba(255,171,64,0.06) 0%, transparent 60%)'
+  },
+  parents: {
+    label: '어버이날',
+    emoji: '👨‍👩‍👧',
+    coupon: 'PARENTS0508',
+    couponDesc: '어버이날 감사 할인 쿠폰 · 5월 8일까지',
+    accentColor: '#f87171',
+    accent2Color: '#e8855a',
+    subtitle: (age, gender) => `${gender} 부모님께 드리는 어버이날 선물 ❤️`,
+    bgGradient: 'radial-gradient(ellipse 60% 40% at 20% 10%, rgba(248,113,113,0.08) 0%, transparent 60%), radial-gradient(ellipse 50% 30% at 80% 80%, rgba(232,133,90,0.06) 0%, transparent 60%)'
+  },
+  teacher: {
+    label: '스승의날',
+    emoji: '🍎',
+    coupon: 'TEACHER0515',
+    couponDesc: '스승의날 감사 할인 쿠폰 · 5월 15일까지',
+    accentColor: '#4ade80',
+    accent2Color: '#2dd4bf',
+    subtitle: (age, gender) => `${gender} 선생님께 드리는 스승의날 선물 🍎`,
+    bgGradient: 'radial-gradient(ellipse 60% 40% at 20% 10%, rgba(74,222,128,0.08) 0%, transparent 60%), radial-gradient(ellipse 50% 30% at 80% 80%, rgba(45,212,191,0.06) 0%, transparent 60%)'
+  }
+};
+
+// ============================
+// PRODUCT DATABASE
+// occasions: children / parents / teacher / all
+// ============================
+const ALL_PRODUCTS = [
+  // ── Home Deco ──
+  {
+    id: 910, name: "Foodle 플레이트 파이브 Plate 05", brand: "Foodle", category: "Home Deco",
+    price: "35,000원", img: "https://sycstore.co.kr/web/product/medium/202604/a5d6373450b5ae5c19f65767b9f02fb4.jpg",
+    url: "https://sycstore.co.kr/product/detail.html?product_no=910",
+    ages: [20,30,40,50], genders: ["female","male"],
+    occasions: ["parents","teacher"]
+  },
+  {
+    id: 889, name: "민들레마음 쿠션 인형", brand: "민들레마음", category: "Home Deco",
+    price: "30,000원", img: "https://sycstore.co.kr/web/product/medium/202601/88ab71f9c45b39a942f03c4d53dbf207.jpg",
+    url: "https://sycstore.co.kr/product/detail.html?product_no=889",
+    ages: [10,20,30], genders: ["female"],
+    occasions: ["children","all"]
+  },
+  {
+    id: 864, name: "페티코 코코넛 원형 플레이트 접시 2종 세트", brand: "페티코", category: "Home Deco",
+    price: "26,000원", img: "https://sycstore.co.kr/web/product/medium/202601/d80158675b59c205b48ae5b93748ace5.jpg",
+    url: "https://sycstore.co.kr/product/detail.html?product_no=864",
+    ages: [20,30,40], genders: ["female","male"],
+    occasions: ["parents","teacher"]
+  },
+  {
+    id: 845, name: "코코베리 순수 바질 핸드워시 100ml", brand: "코코베리", category: "Home Deco",
+    price: "18,000원", img: "https://sycstore.co.kr/web/upload/unfold_images_allskin/main-visual-slide-13.jpg",
+    url: "https://sycstore.co.kr/product/detail.html?product_no=845",
+    ages: [20,30,40,50], genders: ["female","male"],
+    occasions: ["parents","teacher","all"]
+  },
+
+  // ── Stationery ──
+  {
+    id: 878, name: "민들레마음 × 제브라 콜라보 다꾸에디션", brand: "민들레마음", category: "Stationery",
+    price: "28,000원", img: "https://sycstore.co.kr/web/product/medium/202601/9463237847712a4832f744a36db72202.jpg",
+    url: "https://sycstore.co.kr/product/detail.html?product_no=878",
+    ages: [10,20,30], genders: ["female","male"],
+    occasions: ["children","teacher","all"]
+  },
+  {
+    id: 850, name: "오드빌 노트 세트", brand: "오드빌", category: "Stationery",
+    price: "22,000원", img: "https://sycstore.co.kr/web/product/medium/202602/b7e3f2a1c9d4e5f8a2b3c4d5e6f7a8b9.jpg",
+    url: "https://sycstore.co.kr/product/search.html?keyword=오드빌",
+    ages: [10,20,30,40], genders: ["female","male"],
+    occasions: ["teacher","children","all"]
+  },
+  {
+    id: 811, name: "홀썸위크 위클리 플래너", brand: "홀썸위크", category: "Stationery",
+    price: "24,000원", img: "https://sycstore.co.kr/web/product/medium/202511/c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6.jpg",
+    url: "https://sycstore.co.kr/product/search.html?keyword=홀썸위크",
+    ages: [20,30,40], genders: ["female","male"],
+    occasions: ["teacher","parents"]
+  },
+  {
+    id: 822, name: "비듀이 스탬프 다이어리 키트", brand: "비듀이", category: "Stationery",
+    price: "19,000원", img: "https://sycstore.co.kr/web/product/medium/202510/d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9.jpg",
+    url: "https://sycstore.co.kr/product/search.html?keyword=비듀이",
+    ages: [10,20], genders: ["female"],
+    occasions: ["children","all"]
+  },
+
+  // ── Fashion ──
+  {
+    id: 870, name: "온노즈 향기 키링", brand: "온노즈", category: "Fashion",
+    price: "32,000원", img: "https://sycstore.co.kr/web/product/medium/202601/e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0.jpg",
+    url: "https://sycstore.co.kr/product/search.html?keyword=온노즈",
+    ages: [10,20,30], genders: ["female"],
+    occasions: ["teacher","children","all"]
+  },
+  {
+    id: 880, name: "SYC 귀여운 캐릭터 파우치", brand: "SYC", category: "Fashion",
+    price: "21,000원", img: "https://sycstore.co.kr/web/product/medium/202602/f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1.jpg",
+    url: "https://sycstore.co.kr/product/search.html?keyword=귀여운",
+    ages: [10,20], genders: ["female"],
+    occasions: ["children","all"]
+  },
+  {
+    id: 891, name: "REGO HOME 감성 에코백", brand: "REGO HOME", category: "Fashion",
+    price: "27,000원", img: "https://sycstore.co.kr/web/product/medium/202603/a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2.jpg",
+    url: "https://sycstore.co.kr/REGO_HOME.html",
+    ages: [20,30,40], genders: ["female","male"],
+    occasions: ["parents","teacher","all"]
+  },
+
+  // ── Beauty ──
+  {
+    id: 855, name: "코코베리 천연 립밤 세트", brand: "코코베리", category: "Beauty",
+    price: "16,000원", img: "https://sycstore.co.kr/web/product/medium/202601/b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3.jpg",
+    url: "https://sycstore.co.kr/product/list.html?cate_no=55",
+    ages: [10,20,30,40], genders: ["female"],
+    occasions: ["children","teacher","all"]
+  },
+  {
+    id: 860, name: "온노즈 핸드크림 선물 세트", brand: "온노즈", category: "Beauty",
+    price: "29,000원", img: "https://sycstore.co.kr/web/product/medium/202602/c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4.jpg",
+    url: "https://sycstore.co.kr/product/list.html?cate_no=55",
+    ages: [30,40,50], genders: ["female"],
+    occasions: ["parents","teacher"]
+  },
+  {
+    id: 871, name: "남성 그루밍 케어 세트", brand: "SYC", category: "Beauty",
+    price: "34,000원", img: "https://sycstore.co.kr/web/product/medium/202603/d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5.jpg",
+    url: "https://sycstore.co.kr/product/list.html?cate_no=55",
+    ages: [20,30,40], genders: ["male"],
+    occasions: ["parents","teacher"]
+  },
+
+  // ── Food ──
+  {
+    id: 895, name: "착한빵수니 수니 마들렌 세트 12개입", brand: "착한빵수니", category: "Food",
+    price: "28,000원", img: "https://sycstore.co.kr/web/upload/unfold_images_allskin/main-visual-slide-06.jpg",
+    url: "https://sycstore.co.kr/product/list.html?cate_no=50",
+    ages: [10,20,30,40,50], genders: ["female","male"],
+    occasions: ["children","parents","teacher","all"]
+  },
+  {
+    id: 901, name: "수제 쿠키 선물 박스", brand: "SYC Food", category: "Food",
+    price: "22,000원", img: "https://sycstore.co.kr/web/product/medium/202602/e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6.jpg",
+    url: "https://sycstore.co.kr/product/list.html?cate_no=50",
+    ages: [10,20,30,40,50], genders: ["female","male"],
+    occasions: ["children","parents","teacher","all"]
+  },
+  {
+    id: 905, name: "프리미엄 티 컬렉션 세트", brand: "SYC Food", category: "Food",
+    price: "26,000원", img: "https://sycstore.co.kr/web/product/medium/202603/f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7.jpg",
+    url: "https://sycstore.co.kr/product/list.html?cate_no=50",
+    ages: [30,40,50], genders: ["female","male"],
+    occasions: ["parents","teacher"]
+  },
+
+  // ── Pet ──
+  {
+    id: 915, name: "반려동물 생일 간식 세트", brand: "SYC Pet", category: "Pet",
+    price: "23,000원", img: "https://sycstore.co.kr/web/product/medium/202604/a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8.jpg",
+    url: "https://sycstore.co.kr/product/list.html?cate_no=154",
+    ages: [20,30,40], genders: ["female","male"],
+    occasions: ["children","all"]
+  },
+  {
+    id: 920, name: "강아지 캐릭터 장난감 키트", brand: "SYC Pet", category: "Pet",
+    price: "19,000원", img: "https://sycstore.co.kr/web/product/medium/202604/b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9.jpg",
+    url: "https://sycstore.co.kr/product/list.html?cate_no=154",
+    ages: [20,30,40], genders: ["female","male"],
+    occasions: ["children","all"]
+  }
+];
+
+// ============================
+// STATE
+// ============================
+let selectedAge = null;
+let selectedGender = null;
+let selectedOccasion = null;
+let pool = [];
+let bracket = [];
+let nextRound = [];
+let currentPair = 0;
+let totalPairs = 0;
+
+const ROUND_NAMES = { 16: '16강', 8: '8강', 4: '4강', 2: '결승' };
+
+// ============================
+// THEME SWITCHER
+// ============================
+function applyTheme(occasion) {
+  const cfg = OCCASION_CONFIG[occasion];
+  const root = document.documentElement;
+  root.style.setProperty('--accent', cfg.accentColor);
+  root.style.setProperty('--accent2', cfg.accent2Color);
+  // BG gradient
+  document.querySelector('body::before') // cannot set pseudo, use a div instead
+  // update body bg via a style tag
+  let styleEl = document.getElementById('dynamic-theme');
+  if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'dynamic-theme'; document.head.appendChild(styleEl); }
+  styleEl.textContent = `
+    body::before { background: ${cfg.bgGradient} !important; }
+    .header h1 { background: linear-gradient(135deg, ${cfg.accentColor}, ${cfg.accent2Color}); -webkit-background-clip: text; background-clip: text; }
+    .round-badge { color: ${cfg.accentColor}; border-color: ${cfg.accentColor}44; background: linear-gradient(135deg, ${cfg.accentColor}22, ${cfg.accent2Color}18); }
+    .progress-fill { background: linear-gradient(90deg, ${cfg.accentColor}, ${cfg.accent2Color}); }
+    .btn-primary, .buy-btn { background: linear-gradient(135deg, ${cfg.accentColor}, ${cfg.accent2Color}); }
+    .product-card:hover { border-color: ${cfg.accentColor}; }
+    .product-card.chosen { border-color: ${cfg.accentColor}; box-shadow: 0 0 0 2px ${cfg.accentColor}, 0 20px 50px ${cfg.accentColor}44; }
+    .card-choose-overlay { background: linear-gradient(135deg, ${cfg.accentColor}dd, ${cfg.accent2Color}dd); }
+    .winner-card { border-color: ${cfg.accentColor}; box-shadow: 0 0 60px ${cfg.accentColor}44; }
+    .coupon-box { border-color: ${cfg.accentColor}; }
+    .coupon-amount, .coupon-code, .card-price, .sel-btn.selected, .winner-title { color: ${cfg.accentColor}; }
+    .sel-btn.selected { border-color: ${cfg.accentColor}; background: linear-gradient(135deg, ${cfg.accentColor}28, ${cfg.accent2Color}18); box-shadow: 0 4px 20px ${cfg.accentColor}28; }
+    .card-category { background: ${cfg.accentColor}18; border-color: ${cfg.accentColor}44; color: ${cfg.accentColor}; }
+  `;
+}
+
+// ============================
+// SELECTION
+// ============================
+function selectAge(btn) {
+  document.querySelectorAll('#age-grid .sel-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedAge = parseInt(btn.dataset.val);
+  document.getElementById('age-next').disabled = false;
+}
+
+function selectGender(btn) {
+  document.querySelectorAll('#gender-grid .sel-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedGender = btn.dataset.val;
+  document.getElementById('gender-next').disabled = false;
+}
+
+function selectOccasion(btn) {
+  document.querySelectorAll('#occasion-grid .sel-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedOccasion = btn.dataset.val;
+  document.getElementById('occasion-next').disabled = false;
+  applyTheme(selectedOccasion);
+}
+
+function goStep(id) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============================
+// WORLDCUP LOGIC
+// ============================
+function startWorldcup() {
+  // 연령 + 성별 + occasion 3중 필터
+  let filtered = ALL_PRODUCTS.filter(p =>
+    p.ages.includes(selectedAge) &&
+    p.genders.includes(selectedGender) &&
+    (p.occasions.includes(selectedOccasion) || p.occasions.includes('all'))
+  );
+
+  // 부족하면 연령+성별만으로 보충
+  if (filtered.length < 16) {
+    const fallback = ALL_PRODUCTS.filter(p =>
+      p.ages.includes(selectedAge) &&
+      p.genders.includes(selectedGender) &&
+      !filtered.includes(p)
+    );
+    filtered = [...filtered, ...shuffleArr(fallback)];
+  }
+
+  // 그래도 부족하면 전체 풀에서 채우기
+  if (filtered.length < 16) {
+    const rest = ALL_PRODUCTS.filter(p => !filtered.includes(p));
+    filtered = [...filtered, ...shuffleArr(rest)];
+  }
+
+  pool = shuffleArr(filtered).slice(0, 16);
+  while (pool.length < 16) { pool = [...pool, ...pool]; }
+  pool = pool.slice(0, 16);
+
+  bracket = [...pool];
+  nextRound = [];
+  currentPair = 0;
+  totalPairs = 8;
+
+  goStep('step-worldcup');
+  showPair();
+}
+
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showPair() {
+  const a = bracket[currentPair * 2];
+  const b = bracket[currentPair * 2 + 1];
+
+  ['card-a','card-b'].forEach(id => {
+    const card = document.getElementById(id);
+    card.classList.remove('chosen','unchosen');
+    card.style.pointerEvents = 'auto';
+  });
+
+  ['img-a','img-b','fb-a','fb-b'].forEach(id => {
+    const el = document.getElementById(id);
+    if (id.startsWith('img')) el.style.display = '';
+    else el.style.display = 'none';
+  });
+
+  setCard('a', a);
+  setCard('b', b);
+
+  const roundSize = bracket.length;
+  const totalInRound = roundSize / 2;
+  const done = currentPair;
+  const pct = Math.round(((pool.length - roundSize + done) / (pool.length - 1)) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-text').textContent = `${ROUND_NAMES[roundSize]} · ${done+1}/${totalInRound} 경기`;
+  document.getElementById('round-badge').textContent = `${OCCASION_CONFIG[selectedOccasion].emoji} ${ROUND_NAMES[roundSize]}`;
+  document.getElementById('pair-count').textContent = `${done+1} / ${totalInRound} 경기`;
+}
+
+function setCard(side, product) {
+  document.getElementById('img-' + side).src = product.img;
+  document.getElementById('img-' + side).alt = product.name;
+  document.getElementById('cat-' + side).textContent = product.category;
+  document.getElementById('brand-' + side).textContent = product.brand;
+  document.getElementById('name-' + side).textContent = product.name;
+  document.getElementById('price-' + side).textContent = product.price;
+}
+
+function choose(idx) {
+  const chosen = bracket[currentPair * 2 + idx];
+
+  document.getElementById('card-' + (idx === 0 ? 'a' : 'b')).classList.add('chosen');
+  document.getElementById('card-' + (idx === 0 ? 'b' : 'a')).classList.add('unchosen');
+  document.getElementById('card-a').style.pointerEvents = 'none';
+  document.getElementById('card-b').style.pointerEvents = 'none';
+
+  nextRound.push(chosen);
+
+  setTimeout(() => {
+    currentPair++;
+    if (currentPair * 2 >= bracket.length) {
+      if (nextRound.length === 1) {
+        showResult(nextRound[0]);
+      } else {
+        bracket = [...nextRound];
+        nextRound = [];
+        currentPair = 0;
+        showPair();
+      }
+    } else {
+      showPair();
+    }
+  }, 600);
+}
+
+// ============================
+// RESULT
+// ============================
+function showResult(winner) {
+  const cfg = OCCASION_CONFIG[selectedOccasion];
+  const ageLabel = selectedAge === 50 ? '50대 이상' : selectedAge + '대';
+  const genderLabel = selectedGender === 'female' ? '여성' : '남성';
+
+  document.getElementById('winner-img').src = winner.img;
+  document.getElementById('winner-img').alt = winner.name;
+  document.getElementById('winner-cat').textContent = winner.category;
+  document.getElementById('winner-brand').textContent = winner.brand;
+  document.getElementById('winner-name').textContent = winner.name;
+  document.getElementById('winner-price').textContent = winner.price;
+  document.getElementById('buy-link').href = winner.url;
+  document.getElementById('winner-crown').textContent = cfg.emoji === '🍎' ? '🏆' : '👑';
+  document.getElementById('result-subtitle').textContent = cfg.subtitle(ageLabel + ' ' + genderLabel, '');
+
+  // Occasion 쿠폰
+  document.getElementById('coupon-code').textContent = cfg.coupon;
+  document.getElementById('coupon-desc').textContent = cfg.couponDesc;
+  document.getElementById('coupon-label').textContent = cfg.label + ' 특별 할인 쿠폰';
+
+  goStep('step-result');
+  launchConfetti();
+}
+
+// ============================
+// COUPON
+// ============================
+function copyCoupon() {
+  const code = document.getElementById('coupon-code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const msg = document.getElementById('copied-msg');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 2500);
+  });
+}
+
+// ============================
+// CONFETTI
+// ============================
+function launchConfetti() {
+  const cfg = OCCASION_CONFIG[selectedOccasion];
+  const wrap = document.getElementById('confetti');
+  wrap.innerHTML = '';
+  const colors = [cfg.accentColor, cfg.accent2Color, '#ffffff', '#fffde7', '#fce4ec', '#e8f5e9'];
+  for (let i = 0; i < 90; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.top = '-20px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.width = (Math.random() * 8 + 5) + 'px';
+    el.style.height = (Math.random() * 8 + 5) + 'px';
+    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    el.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+    el.style.animationDelay = Math.random() * 1.5 + 's';
+    wrap.appendChild(el);
+  }
+}
+
+// ============================
+// RESTART
+// ============================
+function restart() {
+  selectedAge = null;
+  selectedGender = null;
+  selectedOccasion = null;
+  document.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('age-next').disabled = true;
+  document.getElementById('gender-next').disabled = true;
+  document.getElementById('occasion-next').disabled = true;
+  // 테마 초기화
+  const root = document.documentElement;
+  root.style.setProperty('--accent', '#f0c060');
+  root.style.setProperty('--accent2', '#e8855a');
+  const styleEl = document.getElementById('dynamic-theme');
+  if (styleEl) styleEl.textContent = '';
+  goStep('step-age');
+}
+</script>
+</body>
+</html>
